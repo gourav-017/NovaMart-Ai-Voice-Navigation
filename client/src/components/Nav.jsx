@@ -35,6 +35,7 @@ function Nav() {
         try {
             const result = await axios.get(serverUrl + "/api/auth/logout" , {withCredentials:true})
             console.log(result.data)
+            getCurrentUser(null);
             navigate("/login")
         } catch (error) {
             console.log(error)
