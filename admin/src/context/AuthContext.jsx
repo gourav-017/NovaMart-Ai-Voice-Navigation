@@ -2,7 +2,7 @@ import React, { createContext } from 'react'
 
 export const authDataContext = createContext()
 function AuthContext({children}) {
-    let serverUrl = "https://nova-mart-bcakend.vercel.app"
+    let serverUrl = "https://novamart-ai-voice-navigation-backend.onrender.com"
 
     let value = {
       serverUrl
