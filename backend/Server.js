@@ -17,7 +17,7 @@ let app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
- origin:["https://novamart-ai-voice-navigation-frontend.onrender.com","https://novamart-one.vercel.app"],
+ origin:["https://novamart-ai-voice-navigation-frontend.onrender.com","https://novamart-ai-voice-navigation-admin.onrender.com"],
  credentials:true
 }))
 
