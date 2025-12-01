@@ -17,7 +17,7 @@ let app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
- origin:["http://localhost:5173" , "http://localhost:5174"],
+ origin:'*',
  credentials:true
 }))
 
@@ -28,11 +28,13 @@ app.use("/api/cart",cartRoutes)
 app.use("/api/order",orderRoutes)
 
 
-
-
+   connectDb()
+if(process.env.NODE_ENV !== "production") {
 app.listen(port,()=>{
     console.log("Hello From Server")
-    connectDb()
+ 
 })
+};
+export default app
 
 
