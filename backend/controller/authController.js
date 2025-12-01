@@ -23,19 +23,11 @@ export const registration = async (req, res) => {
 
     if (!validator.isEmail(email)) {
       return res.status(400).json({ message: "Enter valid Email" });
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ message: "Enter valid Email" });
     }
 
     if (password.length < 8) {
       return res.status(400).json({ message: "Enter Strong Password" });
-
-    if (password.length < 8) {
-      return res.status(400).json({ message: "Enter Strong Password" });
     }
-
-    let hashPassword = await bcrypt.hash(password, 10);
 
     let hashPassword = await bcrypt.hash(password, 10);
 
