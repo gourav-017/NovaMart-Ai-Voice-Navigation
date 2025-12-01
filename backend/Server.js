@@ -26,9 +26,11 @@ app.use("/api/user",userRoutes)
 app.use("/api/product",productRoutes)
 app.use("/api/cart",cartRoutes)
 app.use("/api/order",orderRoutes)
+app.use('/',(req,res)=>{
+    res.send("Hello from NovaMart Server")
+})
 
-
-   connectDb()
+connectDb()
 if(process.env.NODE_ENV !== "production") {
 app.listen(port,()=>{
     console.log("Hello From Server")
