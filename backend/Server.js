@@ -17,7 +17,7 @@ let app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
- origin:"*",
+ origin:["http://localhost:5173","https://novamart-one.vercel.app", "http://localhost:5174","https://novamart-admin.vercel.app"],
  credentials:true
 }))
 
@@ -30,13 +30,13 @@ app.use('/',(req,res)=>{
     res.send("Hello from NovaMart Server")
 })
 
-connectDb()
-if(process.env.NODE_ENV !== "production") {
+
+
 app.listen(port,()=>{
     console.log("Hello From Server")
+    connectDb()
  
 })
-};
-export default app
+
 
 
