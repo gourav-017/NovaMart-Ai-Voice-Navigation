@@ -3,14 +3,15 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import { genToken, genToken1 } from "../config/token.js";
 
-// COOKIE SETTINGS (one place)
+// =================== COOKIE OPTIONS FOR VERCEL =====================
 const cookieOptions = {
-    httpOnly: true,
-    secure: true,          // Vercel uses HTTPS → required
-    sameSite: "None",      // Allow frontend on different domain
-    maxAge: 7 * 24 * 60 * 60 * 1000
+  httpOnly: true,
+  secure: true,       // Vercel needs HTTPS only
+  sameSite: "None",   // Allow cross-site cookies
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
+// =================== REGISTRATION =====================
 export const registration = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -30,26 +31,31 @@ export const registration = async (req, res) => {
 
     let hashPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ name, email, password: hashPassword });
-    let token = genToken(user._id);
+    const user = await User.create({
+      name,
+      email,
+      password: hashPassword,
+    });
+
+    let token = await genToken(user._id);
 
     res.cookie("token", token, cookieOptions);
 
     return res.status(201).json(user);
-
   } catch (error) {
-    console.log("registration error", error);
+    console.log("registration error");
     return res.status(500).json({ message: `registration error ${error}` });
   }
 };
 
+// =================== LOGIN =====================
 export const login = async (req, res) => {
   try {
     let { email, password } = req.body;
 
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not Found" });
+      return res.status(404).json({ message: "User is not Found" });
     }
 
     let isMatch = await bcrypt.compare(password, user.password);
@@ -57,34 +63,33 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    let token = genToken(user._id);
+    let token = await genToken(user._id);
 
     res.cookie("token", token, cookieOptions);
 
     return res.status(200).json(user);
-
   } catch (error) {
-    console.log("login error", error);
+    console.log("login error");
     return res.status(500).json({ message: `Login error ${error}` });
   }
 };
 
+// =================== LOGOUT =====================
 export const logOut = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None"
+    res.cookie("token", "", {
+      ...cookieOptions,
+      maxAge: 0,
     });
 
-    return res.status(200).json({ message: "Logout successful" });
-
+    return res.status(200).json({ message: "logOut successful" });
   } catch (error) {
-    console.log("logOut error", error);
-    return res.status(500).json({ message: `Logout error ${error}` });
+    console.log("logOut error");
+    return res.status(500).json({ message: `LogOut error ${error}` });
   }
 };
 
+// =================== GOOGLE LOGIN =====================
 export const googleLogin = async (req, res) => {
   try {
     let { name, email } = req.body;
@@ -94,37 +99,41 @@ export const googleLogin = async (req, res) => {
       user = await User.create({ name, email });
     }
 
-    let token = genToken(user._id);
+    let token = await genToken(user._id);
 
     res.cookie("token", token, cookieOptions);
 
     return res.status(200).json(user);
-
   } catch (error) {
-    console.log("googleLogin error", error);
+    console.log("googleLogin error");
     return res.status(500).json({ message: `googleLogin error ${error}` });
   }
 };
 
+// =================== ADMIN LOGIN =====================
 export const adminLogin = async (req, res) => {
   try {
     let { email, password } = req.body;
 
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-      let token = genToken1(email);
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      let token = await genToken1(email);
 
       res.cookie("token", token, {
         ...cookieOptions,
-        maxAge: 1 * 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000,
       });
 
       return res.status(200).json(token);
     }
 
     return res.status(400).json({ message: "Invalid credentials" });
-
   } catch (error) {
-    console.log("AdminLogin error", error);
-    return res.status(500).json({ message: `AdminLogin error ${error}` });
+    console.log("AdminLogin error");
+    return res
+      .status(500)
+      .json({ message: `AdminLogin error ${error}` });
   }
 };

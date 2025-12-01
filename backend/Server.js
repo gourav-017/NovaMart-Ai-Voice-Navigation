@@ -17,7 +17,7 @@ let app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
- origin:["https://novamart-one.vercel.app","https://novamart-admin.vercel.app"],
+ origin:["http://localhost:5173","https://novamart-one.vercel.app", "http://localhost:5174","https://novamart-admin.vercel.app"],
  credentials:true
 }))
 
